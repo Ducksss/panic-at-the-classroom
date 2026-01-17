@@ -262,3 +262,91 @@
     animation: fadeInOut 4s ease-in-out;
     pointer-events: none;
 }
+
+@keyframes fadeInOut {
+    0% {
+        opacity: 0;
+    }
+
+    10% {
+        opacity: 1;
+    }
+
+    80% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 0;
+    }
+}
+
+/* Interactive Styles */
+.page-item {
+    transition: all 0.15s ease;
+}
+
+.page-item:hover {
+    transform: translateX(3px);
+}
+
+.toggle-block {
+    transition: all 0.2s ease;
+}
+
+.toggle-block.expanded {
+    background: #fafaf9;
+}
+
+.toggle-content {
+    padding: 16px;
+    border-top: 1px solid #e5e5e5;
+    background: white;
+}
+
+.toggle-content code {
+    display: block;
+    background: #f7f6f3;
+    padding: 12px;
+    border-radius: 4px;
+    margin: 8px 0;
+    font-family: monospace;
+    font-size: 13px;
+}
+
+.toggle-icon {
+    transition: transform 0.2s ease;
+}
+
+.todo-item {
+    cursor: pointer;
+    transition: all 0.15s ease;
+    border-radius: 4px;
+    padding: 8px;
+    margin: -8px;
+}
+
+.todo-item:hover {
+    background: #f7f6f3;
+}
+
+.checkbox {
+    font-size: 16px;
+}
+
+/* Editing indicator */
+.editing-indicator {
+    animation: pulse-edit 2s infinite;
+}
+
+@keyframes pulse-edit {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.6;
+    }
+}

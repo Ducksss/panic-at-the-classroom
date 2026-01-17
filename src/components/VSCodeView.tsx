@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useMemo, useState, useEffect } from 'react'
 import './VSCodeView.css'
 
 interface VSCodeViewProps {
@@ -77,6 +77,28 @@ export function VSCodeView({ onExit }: VSCodeViewProps) {
     const code = useMemo(generateCode, [])
     const lines = code.split('\n')
 
+    // Simulated cursor position that changes
+    const [cursorLine, setCursorLine] = useState(42)
+    const [cursorCol, setCursorCol] = useState(18)
+    const [selectedFile, setSelectedFile] = useState('ml_classifier.py')
+
+    // Simulate cursor movement
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setCursorLine(prev => {
+                const newLine = prev + Math.floor(Math.random() * 5) - 2
+                return Math.max(1, Math.min(lines.length, newLine))
+            })
+            setCursorCol(Math.floor(Math.random() * 40) + 1)
+        }, 3000)
+        return () => clearInterval(interval)
+    }, [lines.length])
+
+    const handleFileClick = (e: React.MouseEvent, filename: string) => {
+        e.stopPropagation()
+        setSelectedFile(filename)
+    }
+
     return (
         <div className="vscode-view" onClick={onExit}>
             {/* Title Bar */}
@@ -93,7 +115,7 @@ export function VSCodeView({ onExit }: VSCodeViewProps) {
                     <span className="menu-item">Help</span>
                 </div>
                 <div className="titlebar-center">
-                    ml_classifier.py - data_analysis - Visual Studio Code
+                    {selectedFile} - data_analysis - Visual Studio Code
                 </div>
                 <div className="titlebar-right">
                     <span className="titlebar-btn">─</span>
@@ -121,9 +143,15 @@ export function VSCodeView({ onExit }: VSCodeViewProps) {
                     <div className="folder open">
                         <span>📂 data_analysis</span>
                     </div>
-                    <div className="file">📄 .gitignore</div>
-                    <div className="file">📄 README.md</div>
-                    <div className="file">📄 requirements.txt</div>
+                    <div className="file" onClick={(e) => handleFileClick(e, '.gitignore')}>
+                        📄 .gitignore
+                    </div>
+                    <div className="file" onClick={(e) => handleFileClick(e, 'README.md')}>
+                        📄 README.md
+                    </div>
+                    <div className="file" onClick={(e) => handleFileClick(e, 'requirements.txt')}>
+                        📄 requirements.txt
+                    </div>
                     <div className="folder">
                         <span>📁 data</span>
                     </div>
@@ -133,46 +161,77 @@ export function VSCodeView({ onExit }: VSCodeViewProps) {
                     <div className="folder open">
                         <span>📂 src</span>
                     </div>
-                    <div className="file nested">📄 __init__.py</div>
-                    <div className="file nested active">🐍 ml_classifier.py</div>
-                    <div className="file nested">📄 data_loader.py</div>
-                    <div className="file nested">📄 utils.py</div>
+                    <div className="file nested" onClick={(e) => handleFileClick(e, '__init__.py')}>
+                        📄 __init__.py
+                    </div>
+                    <div
+                        className={`file nested ${selectedFile === 'ml_classifier.py' ? 'active' : ''}`}
+                        onClick={(e) => handleFileClick(e, 'ml_classifier.py')}
+                    >
+                        🐍 ml_classifier.py
+                    </div>
+                    <div className="file nested" onClick={(e) => handleFileClick(e, 'data_loader.py')}>
+                        📄 data_loader.py
+                    </div>
+                    <div className="file nested" onClick={(e) => handleFileClick(e, 'utils.py')}>
+                        📄 utils.py
+                    </div>
                 </div>
 
                 {/* Editor */}
                 <div className="editor-area">
                     {/* Tabs */}
                     <div className="editor-tabs">
-                        <div className="tab active">
+                        <div className={`tab ${selectedFile === 'ml_classifier.py' ? 'active' : ''}`}>
                             <span>🐍</span> ml_classifier.py
                             <span className="tab-close">×</span>
                         </div>
-                        <div className="tab">
+                        <div className={`tab ${selectedFile === 'utils.py' ? 'active' : ''}`}>
                             <span>📄</span> utils.py
                         </div>
                     </div>
 
                     {/* Breadcrumb */}
                     <div className="breadcrumb">
-                        src › ml_classifier.py › train_model
+                        src › {selectedFile} › train_model
                     </div>
 
                     {/* Code Editor */}
                     <div className="code-editor">
                         <div className="line-numbers">
                             {lines.map((_, i) => (
-                                <div key={i} className="line-number">{i + 1}</div>
+                                <div
+                                    key={i}
+                                    className={`line-number ${i + 1 === cursorLine ? 'current' : ''}`}
+                                >
+                                    {i + 1}
+                                </div>
                             ))}
                         </div>
                         <pre className="code-content">
-                            <code>{code}</code>
+                            {lines.map((line, i) => (
+                                <div
+                                    key={i}
+                                    className={`code-line ${i + 1 === cursorLine ? 'current-line' : ''}`}
+                                >
+                                    {line}
+                                    {i + 1 === cursorLine && (
+                                        <span className="cursor-blink">|</span>
+                                    )}
+                                </div>
+                            ))}
                         </pre>
                     </div>
                 </div>
 
                 {/* Minimap */}
                 <div className="minimap">
-                    <div className="minimap-content"></div>
+                    <div className="minimap-content">
+                        <div
+                            className="minimap-viewport"
+                            style={{ top: `${(cursorLine / lines.length) * 100}%` }}
+                        />
+                    </div>
                 </div>
             </div>
 
@@ -180,14 +239,14 @@ export function VSCodeView({ onExit }: VSCodeViewProps) {
             <div className="vscode-statusbar">
                 <div className="status-left">
                     <span className="status-item">⎇ main</span>
-                    <span className="status-item">🔄 0</span>
+                    <span className="status-item sync-animation">🔄 Syncing...</span>
                     <span className="status-item">⚠️ 0</span>
                 </div>
                 <div className="status-right">
-                    <span className="status-item">Ln 42, Col 18</span>
+                    <span className="status-item">Ln {cursorLine}, Col {cursorCol}</span>
                     <span className="status-item">Spaces: 4</span>
                     <span className="status-item">UTF-8</span>
-                    <span className="status-item">Python</span>
+                    <span className="status-item">🐍 Python</span>
                     <span className="status-item">🔔</span>
                 </div>
             </div>

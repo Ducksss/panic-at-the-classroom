@@ -251,6 +251,17 @@
             rgba(255, 255, 255, 0.02) 50%,
             rgba(255, 255, 255, 0.05) 100%);
     border-radius: 2px;
+    position: relative;
+}
+
+.minimap-viewport {
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 30px;
+    background: rgba(100, 100, 100, 0.5);
+    border-radius: 2px;
+    transition: top 0.3s ease;
 }
 
 /* Status Bar */
@@ -277,6 +288,57 @@
 
 .status-item:hover {
     background: rgba(255, 255, 255, 0.1);
+}
+
+.sync-animation {
+    animation: pulse-sync 2s infinite;
+}
+
+@keyframes pulse-sync {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.5;
+    }
+}
+
+/* Code line highlighting */
+.code-line {
+    height: 21px;
+    display: block;
+    white-space: pre;
+}
+
+.code-line.current-line {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.line-number.current {
+    color: #c6c6c6;
+    background: rgba(255, 255, 255, 0.05);
+}
+
+/* Blinking cursor */
+.cursor-blink {
+    color: #aeafad;
+    animation: blink 1s step-end infinite;
+    font-weight: 100;
+}
+
+@keyframes blink {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0;
+    }
 }
 
 /* Exit hint */

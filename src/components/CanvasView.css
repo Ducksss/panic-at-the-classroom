@@ -320,3 +320,126 @@
     animation: fadeInOut 4s ease-in-out;
     pointer-events: none;
 }
+
+@keyframes fadeInOut {
+    0% {
+        opacity: 0;
+    }
+
+    10% {
+        opacity: 1;
+    }
+
+    80% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 0;
+    }
+}
+
+/* Interactive Styles */
+.course-item {
+    transition: all 0.15s ease;
+}
+
+.course-item:hover {
+    transform: translateX(3px);
+}
+
+.module-header {
+    transition: all 0.15s ease;
+}
+
+.module-items {
+    animation: slideDown 0.2s ease;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Notification badge */
+.notification {
+    position: relative;
+}
+
+.notif-badge {
+    position: absolute;
+    top: -5px;
+    right: -8px;
+    background: #e74c3c;
+    color: white;
+    font-size: 10px;
+    padding: 2px 5px;
+    border-radius: 10px;
+    font-weight: bold;
+}
+
+.notification-dot::after {
+    content: '•';
+    color: #e74c3c;
+    margin-left: 4px;
+}
+
+/* Urgent todo */
+.canvas-todo .todo-item.urgent {
+    border-left-color: #e74c3c;
+    background: #fff5f5;
+    animation: pulse-urgent 2s infinite;
+}
+
+@keyframes pulse-urgent {
+
+    0%,
+    100% {
+        background: #fff5f5;
+    }
+
+    50% {
+        background: #ffe5e5;
+    }
+}
+
+/* Highlight item */
+.module-item.highlight {
+    background: #fffde7;
+}
+
+.module-item.completed {
+    opacity: 0.7;
+}
+
+/* Recent grades */
+.recent-grades {
+    margin-top: 24px;
+    padding-top: 16px;
+    border-top: 1px solid #e0e0e0;
+}
+
+.grade-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 0;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.grade {
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 4px;
+}
+
+.grade.good {
+    background: #e8f5e9;
+    color: #2e7d32;
+}

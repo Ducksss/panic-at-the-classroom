@@ -344,3 +344,105 @@
     animation: fadeInOut 4s ease-in-out;
     pointer-events: none;
 }
+
+@keyframes fadeInOut {
+    0% {
+        opacity: 0;
+    }
+
+    10% {
+        opacity: 1;
+    }
+
+    80% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 0;
+    }
+}
+
+/* Interactive Styles */
+.email-item {
+    transition: all 0.15s ease;
+}
+
+.email-item:hover {
+    transform: translateX(2px);
+}
+
+.folder-item {
+    transition: all 0.15s ease;
+}
+
+/* Typing Indicator */
+.typing-indicator {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 16px;
+    background: #f0f7ff;
+    border-radius: 8px;
+    margin-top: 24px;
+    color: #0078d4;
+    font-size: 13px;
+}
+
+.typing-dot {
+    width: 8px;
+    height: 8px;
+    background: #0078d4;
+    border-radius: 50%;
+    animation: typing-bounce 1.4s infinite ease-in-out;
+}
+
+.typing-dot:nth-child(1) {
+    animation-delay: 0s;
+}
+
+.typing-dot:nth-child(2) {
+    animation-delay: 0.2s;
+}
+
+.typing-dot:nth-child(3) {
+    animation-delay: 0.4s;
+}
+
+@keyframes typing-bounce {
+
+    0%,
+    80%,
+    100% {
+        transform: translateY(0);
+        opacity: 0.5;
+    }
+
+    40% {
+        transform: translateY(-6px);
+        opacity: 1;
+    }
+}
+
+/* Sync status */
+.sync-status {
+    font-size: 11px;
+    margin-right: 16px;
+    animation: sync-pulse 3s infinite;
+}
+
+@keyframes sync-pulse {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.5;
+    }
+}
+
+.status-sync {
+    color: #28a745;
+}

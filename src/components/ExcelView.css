@@ -361,3 +361,85 @@
         opacity: 0;
     }
 }
+
+/* Interactive Styles */
+.spreadsheet td:hover:not(.row-header):not(.col-header):not(.header-cell) {
+    background: #e8f5e9;
+}
+
+.spreadsheet .selected-cell {
+    background: #c8e6c9 !important;
+    outline: 2px solid #217346;
+    outline-offset: -2px;
+}
+
+/* Saving Animation */
+.saving-indicator {
+    animation: pulse-save 1.5s infinite;
+    font-size: 11px;
+    margin-right: 16px;
+}
+
+@keyframes pulse-save {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.4;
+    }
+}
+
+/* Formula cursor */
+.formula-cursor {
+    animation: formula-blink 1s step-end infinite;
+    color: #217346;
+}
+
+@keyframes formula-blink {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0;
+    }
+}
+
+/* Status animations */
+.status-calculating {
+    animation: spin-calc 2s linear infinite;
+    margin-left: 16px;
+}
+
+@keyframes spin-calc {
+    0% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.3;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
+
+.status-ready {
+    color: rgba(255, 255, 255, 0.9);
+}
+
+/* Tab hover */
+.sheet-tab {
+    transition: all 0.2s;
+}
+
+.sheet-tab:hover:not(.active) {
+    background: #fff;
+    transform: translateY(-1px);
+}

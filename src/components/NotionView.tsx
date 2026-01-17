@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import './NotionView.css'
 
 interface NotionViewProps {
@@ -5,6 +6,29 @@ interface NotionViewProps {
 }
 
 export function NotionView({ onExit }: NotionViewProps) {
+    const [activePage, setActivePage] = useState('CS301 Notes')
+    const [expandedToggles, setExpandedToggles] = useState<string[]>([])
+    const [checkedItems, setCheckedItems] = useState<string[]>(['item1', 'item2'])
+
+    const handlePageClick = (e: React.MouseEvent, page: string) => {
+        e.stopPropagation()
+        setActivePage(page)
+    }
+
+    const handleToggle = (e: React.MouseEvent, id: string) => {
+        e.stopPropagation()
+        setExpandedToggles(prev =>
+            prev.includes(id) ? prev.filter(t => t !== id) : [...prev, id]
+        )
+    }
+
+    const handleCheckItem = (e: React.MouseEvent, id: string) => {
+        e.stopPropagation()
+        setCheckedItems(prev =>
+            prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]
+        )
+    }
+
     return (
         <div className="notion-view" onClick={onExit}>
             {/* Sidebar */}
@@ -22,9 +46,24 @@ export function NotionView({ onExit }: NotionViewProps) {
 
                 <div className="sidebar-section">
                     <div className="section-header">Favorites</div>
-                    <div className="page-item active">📖 CS301 Notes</div>
-                    <div className="page-item">📊 Data Structures</div>
-                    <div className="page-item">🧮 Algorithms</div>
+                    <div
+                        className={`page-item ${activePage === 'CS301 Notes' ? 'active' : ''}`}
+                        onClick={(e) => handlePageClick(e, 'CS301 Notes')}
+                    >
+                        📖 CS301 Notes
+                    </div>
+                    <div
+                        className={`page-item ${activePage === 'Data Structures' ? 'active' : ''}`}
+                        onClick={(e) => handlePageClick(e, 'Data Structures')}
+                    >
+                        📊 Data Structures
+                    </div>
+                    <div
+                        className={`page-item ${activePage === 'Algorithms' ? 'active' : ''}`}
+                        onClick={(e) => handlePageClick(e, 'Algorithms')}
+                    >
+                        🧮 Algorithms
+                    </div>
                 </div>
 
                 <div className="sidebar-section">
@@ -43,7 +82,7 @@ export function NotionView({ onExit }: NotionViewProps) {
                     <div className="breadcrumb">
                         <span>University Notes</span>
                         <span>/</span>
-                        <span>CS301 Notes</span>
+                        <span>{activePage}</span>
                     </div>
                     <div className="topbar-actions">
                         <button>Share</button>
@@ -67,7 +106,7 @@ export function NotionView({ onExit }: NotionViewProps) {
                         </div>
                         <div className="property">
                             <span className="property-name">Last Edited</span>
-                            <span className="property-value">Today, 2:30 PM</span>
+                            <span className="property-value editing-indicator">Just now ✍️</span>
                         </div>
                     </div>
 
@@ -98,28 +137,62 @@ export function NotionView({ onExit }: NotionViewProps) {
                             <li>Remove columns not dependent on primary key</li>
                         </ul>
 
-                        <div className="toggle-block">
+                        <div
+                            className={`toggle-block ${expandedToggles.includes('example') ? 'expanded' : ''}`}
+                            onClick={(e) => handleToggle(e, 'example')}
+                        >
                             <div className="toggle-header">
-                                <span>▶</span> Example: Normalizing a Student Database
+                                <span className="toggle-icon">
+                                    {expandedToggles.includes('example') ? '▼' : '▶'}
+                                </span>
+                                Example: Normalizing a Student Database
                             </div>
+                            {expandedToggles.includes('example') && (
+                                <div className="toggle-content">
+                                    <p>Consider a table with repeating groups:</p>
+                                    <code>Student(ID, Name, Course1, Grade1, Course2, Grade2)</code>
+                                    <p>After 1NF:</p>
+                                    <code>Student(ID, Name), Enrollment(StudentID, Course, Grade)</code>
+                                </div>
+                            )}
                         </div>
 
                         <h2>Practice Problems</h2>
                         <div className="todo-list">
-                            <div className="todo-item done">
-                                <span className="checkbox">☑️</span>
+                            <div
+                                className={`todo-item ${checkedItems.includes('item1') ? 'done' : ''}`}
+                                onClick={(e) => handleCheckItem(e, 'item1')}
+                            >
+                                <span className="checkbox">
+                                    {checkedItems.includes('item1') ? '☑️' : '⬜'}
+                                </span>
                                 <span>Read Chapter 7.1 - 7.3</span>
                             </div>
-                            <div className="todo-item done">
-                                <span className="checkbox">☑️</span>
+                            <div
+                                className={`todo-item ${checkedItems.includes('item2') ? 'done' : ''}`}
+                                onClick={(e) => handleCheckItem(e, 'item2')}
+                            >
+                                <span className="checkbox">
+                                    {checkedItems.includes('item2') ? '☑️' : '⬜'}
+                                </span>
                                 <span>Complete Worksheet 8A</span>
                             </div>
-                            <div className="todo-item">
-                                <span className="checkbox">⬜</span>
+                            <div
+                                className={`todo-item ${checkedItems.includes('item3') ? 'done' : ''}`}
+                                onClick={(e) => handleCheckItem(e, 'item3')}
+                            >
+                                <span className="checkbox">
+                                    {checkedItems.includes('item3') ? '☑️' : '⬜'}
+                                </span>
                                 <span>Practice normalization exercises</span>
                             </div>
-                            <div className="todo-item">
-                                <span className="checkbox">⬜</span>
+                            <div
+                                className={`todo-item ${checkedItems.includes('item4') ? 'done' : ''}`}
+                                onClick={(e) => handleCheckItem(e, 'item4')}
+                            >
+                                <span className="checkbox">
+                                    {checkedItems.includes('item4') ? '☑️' : '⬜'}
+                                </span>
                                 <span>Review for Quiz 4</span>
                             </div>
                         </div>

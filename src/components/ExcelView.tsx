@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useMemo, useState, useEffect } from 'react'
 import {
     BarChart, Bar, LineChart, Line, PieChart, Pie, Cell,
     XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer
@@ -36,6 +36,38 @@ export function ExcelView({ onExit }: ExcelViewProps) {
     const barData = useMemo(generateData, [])
     const pieData = useMemo(generatePieData, [])
 
+    // Interactive state
+    const [selectedCell, setSelectedCell] = useState({ row: 5, col: 3 })
+    const [activeSheet, setActiveSheet] = useState('Summary')
+    const [formulaCell, setFormulaCell] = useState('H12')
+    const [formula, setFormula] = useState('=SUM(B12:G12)*1.15')
+
+    // Simulate cell selection movement
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setSelectedCell(prev => ({
+                row: Math.max(1, Math.min(14, prev.row + Math.floor(Math.random() * 3) - 1)),
+                col: Math.max(1, Math.min(7, prev.col + Math.floor(Math.random() * 3) - 1))
+            }))
+        }, 4000)
+        return () => clearInterval(interval)
+    }, [])
+
+    // Update formula bar when cell changes
+    useEffect(() => {
+        const cols = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H']
+        setFormulaCell(`${cols[selectedCell.col]}${selectedCell.row}`)
+        const formulas = [
+            '=SUM(B2:B14)',
+            '=AVERAGE(C2:C14)',
+            '=IF(D5>1000,"High","Low")',
+            '=VLOOKUP(A5,Data!A:B,2,FALSE)',
+            '=D5*1.15-E5',
+            '=(F5-G5)/F5*100'
+        ]
+        setFormula(formulas[Math.floor(Math.random() * formulas.length)])
+    }, [selectedCell])
+
     // Generate spreadsheet cells
     const spreadsheetData = useMemo(() => {
         const rows = []
@@ -62,6 +94,18 @@ export function ExcelView({ onExit }: ExcelViewProps) {
         return rows
     }, [])
 
+    const handleCellClick = (e: React.MouseEvent, row: number, col: number) => {
+        e.stopPropagation()
+        if (row > 0 && col > 0) {
+            setSelectedCell({ row, col })
+        }
+    }
+
+    const handleSheetClick = (e: React.MouseEvent, sheet: string) => {
+        e.stopPropagation()
+        setActiveSheet(sheet)
+    }
+
     return (
         <div className="excel-view" onClick={onExit}>
             {/* Title Bar */}
@@ -71,6 +115,7 @@ export function ExcelView({ onExit }: ExcelViewProps) {
                     <span>Q4_Financial_Analysis_2024.xlsx - Excel</span>
                 </div>
                 <div className="titlebar-right">
+                    <span className="saving-indicator">💾 Saving...</span>
                     <span className="titlebar-btn">─</span>
                     <span className="titlebar-btn">□</span>
                     <span className="titlebar-btn close">✕</span>
@@ -118,8 +163,11 @@ export function ExcelView({ onExit }: ExcelViewProps) {
 
             {/* Formula Bar */}
             <div className="excel-formula-bar">
-                <div className="cell-name">H12</div>
-                <div className="formula-input">=SUM(B12:G12)*1.15</div>
+                <div className="cell-name">{formulaCell}</div>
+                <div className="formula-input">
+                    <span className="formula-text">{formula}</span>
+                    <span className="formula-cursor">|</span>
+                </div>
             </div>
 
             {/* Main Content */}
@@ -134,12 +182,14 @@ export function ExcelView({ onExit }: ExcelViewProps) {
                                     {row.map((cell, j) => (
                                         <td
                                             key={j}
+                                            onClick={(e) => handleCellClick(e, i, j)}
                                             className={`
-                        ${j === 0 ? 'col-header' : ''} 
-                        ${i === 0 ? 'header-cell' : ''}
-                        ${cell.toString().includes('%') ? (cell.toString().startsWith('+') ? 'positive' : 'negative') : ''}
-                        ${cell === '✓' ? 'status-ok' : ''}
-                      `}
+                                                ${j === 0 ? 'col-header' : ''} 
+                                                ${i === 0 ? 'header-cell' : ''}
+                                                ${selectedCell.row === i && selectedCell.col === j ? 'selected-cell' : ''}
+                                                ${cell.toString().includes('%') ? (cell.toString().startsWith('+') ? 'positive' : 'negative') : ''}
+                                                ${cell === '✓' ? 'status-ok' : ''}
+                                            `}
                                         >
                                             {cell}
                                         </td>
@@ -209,17 +259,24 @@ export function ExcelView({ onExit }: ExcelViewProps) {
 
             {/* Sheet Tabs */}
             <div className="excel-sheet-tabs">
-                <div className="sheet-tab active">Summary</div>
-                <div className="sheet-tab">Q4 Data</div>
-                <div className="sheet-tab">Charts</div>
-                <div className="sheet-tab">Budget 2024</div>
-                <div className="sheet-tab">Projections</div>
+                {['Summary', 'Q4 Data', 'Charts', 'Budget 2024', 'Projections'].map(sheet => (
+                    <div
+                        key={sheet}
+                        className={`sheet-tab ${activeSheet === sheet ? 'active' : ''}`}
+                        onClick={(e) => handleSheetClick(e, sheet)}
+                    >
+                        {sheet}
+                    </div>
+                ))}
                 <div className="sheet-add">+</div>
             </div>
 
             {/* Status Bar */}
             <div className="excel-statusbar">
-                <div className="status-left">Ready</div>
+                <div className="status-left">
+                    <span className="status-ready">Ready</span>
+                    <span className="status-calculating">⟳ Calculating...</span>
+                </div>
                 <div className="status-right">
                     <span>Average: $45,678</span>
                     <span>Count: 156</span>

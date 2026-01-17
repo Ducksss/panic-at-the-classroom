@@ -1,0 +1,363 @@
+.excel-view {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: #f3f3f3;
+    display: flex;
+    flex-direction: column;
+    font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 12px;
+    z-index: 10000;
+    cursor: default;
+}
+
+/* Title Bar */
+.excel-titlebar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #217346;
+    color: white;
+    padding: 4px 8px;
+    font-size: 12px;
+}
+
+.titlebar-left {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.excel-icon {
+    font-size: 14px;
+}
+
+.titlebar-right {
+    display: flex;
+    gap: 4px;
+}
+
+.titlebar-btn {
+    width: 28px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    border-radius: 2px;
+}
+
+.titlebar-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.titlebar-btn.close:hover {
+    background: #e81123;
+}
+
+/* Ribbon */
+.excel-ribbon {
+    background: #f3f3f3;
+    border-bottom: 1px solid #d4d4d4;
+}
+
+.ribbon-tabs {
+    display: flex;
+    background: #217346;
+    padding: 4px 8px 0;
+}
+
+.ribbon-tab {
+    padding: 6px 16px;
+    color: rgba(255, 255, 255, 0.8);
+    cursor: pointer;
+    font-size: 12px;
+    border-radius: 4px 4px 0 0;
+}
+
+.ribbon-tab:hover {
+    color: white;
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.ribbon-tab.active {
+    background: #f3f3f3;
+    color: #217346;
+}
+
+.ribbon-toolbar {
+    display: flex;
+    align-items: center;
+    padding: 8px 16px;
+    gap: 8px;
+    background: white;
+    border-bottom: 1px solid #e1e1e1;
+}
+
+.toolbar-group {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.toolbar-separator {
+    width: 1px;
+    height: 32px;
+    background: #e1e1e1;
+    margin: 0 8px;
+}
+
+.toolbar-btn {
+    padding: 6px 12px;
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 11px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.toolbar-btn:hover {
+    background: #e5f1eb;
+    border-color: #217346;
+}
+
+.toolbar-btn.small {
+    padding: 4px 8px;
+    font-weight: bold;
+}
+
+.toolbar-select {
+    padding: 4px 8px;
+    border: 1px solid #d4d4d4;
+    border-radius: 4px;
+    font-size: 11px;
+}
+
+.toolbar-select.small {
+    width: 50px;
+}
+
+/* Formula Bar */
+.excel-formula-bar {
+    display: flex;
+    align-items: center;
+    background: white;
+    border-bottom: 1px solid #d4d4d4;
+    padding: 4px 8px;
+}
+
+.cell-name {
+    width: 60px;
+    padding: 4px 8px;
+    border: 1px solid #d4d4d4;
+    border-radius: 2px;
+    text-align: center;
+    font-weight: 500;
+    margin-right: 8px;
+}
+
+.formula-input {
+    flex: 1;
+    padding: 4px 8px;
+    border: 1px solid #d4d4d4;
+    border-radius: 2px;
+    font-family: 'Consolas', monospace;
+    color: #217346;
+}
+
+/* Main Content */
+.excel-content {
+    flex: 1;
+    display: grid;
+    grid-template-columns: 1fr 400px;
+    gap: 16px;
+    padding: 0;
+    overflow: hidden;
+}
+
+/* Spreadsheet */
+.spreadsheet {
+    overflow: auto;
+    background: white;
+}
+
+.spreadsheet table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+.spreadsheet td {
+    border: 1px solid #e1e1e1;
+    padding: 6px 10px;
+    min-width: 80px;
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+}
+
+.spreadsheet .row-header {
+    background: #f3f3f3;
+    text-align: center;
+    min-width: 40px;
+    color: #666;
+    font-weight: 500;
+}
+
+.spreadsheet .col-header {
+    text-align: left;
+    font-weight: 500;
+    background: #fafafa;
+}
+
+.spreadsheet .header-cell {
+    background: #217346;
+    color: white;
+    font-weight: 600;
+    text-align: center;
+}
+
+.spreadsheet .header-row .row-header {
+    background: #217346;
+}
+
+.spreadsheet .positive {
+    color: #28a745;
+    font-weight: 500;
+}
+
+.spreadsheet .negative {
+    color: #dc3545;
+    font-weight: 500;
+}
+
+.spreadsheet .status-ok {
+    color: #28a745;
+    text-align: center;
+}
+
+/* Charts Section */
+.charts-section {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 12px;
+    overflow-y: auto;
+    background: #f8f8f8;
+}
+
+.chart-container {
+    background: white;
+    border: 1px solid #e1e1e1;
+    border-radius: 4px;
+    padding: 12px;
+}
+
+.chart-container h3 {
+    font-size: 11px;
+    color: #333;
+    margin-bottom: 8px;
+    font-weight: 600;
+}
+
+/* Sheet Tabs */
+.excel-sheet-tabs {
+    display: flex;
+    align-items: center;
+    background: #e1e1e1;
+    padding: 0 8px;
+    gap: 2px;
+}
+
+.sheet-tab {
+    padding: 6px 16px;
+    background: #f3f3f3;
+    border: 1px solid #d4d4d4;
+    border-bottom: none;
+    border-radius: 4px 4px 0 0;
+    font-size: 11px;
+    cursor: pointer;
+}
+
+.sheet-tab:hover {
+    background: white;
+}
+
+.sheet-tab.active {
+    background: white;
+    border-color: #d4d4d4;
+    font-weight: 500;
+}
+
+.sheet-add {
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    border-radius: 4px;
+    margin-left: 4px;
+}
+
+.sheet-add:hover {
+    background: rgba(0, 0, 0, 0.1);
+}
+
+/* Status Bar */
+.excel-statusbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #217346;
+    color: white;
+    padding: 4px 16px;
+    font-size: 11px;
+}
+
+.status-right {
+    display: flex;
+    gap: 24px;
+}
+
+.status-right .zoom {
+    width: 60px;
+    text-align: right;
+}
+
+/* Exit Hint */
+.exit-hint {
+    position: fixed;
+    bottom: 40px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0, 0, 0, 0.7);
+    color: white;
+    padding: 8px 24px;
+    border-radius: 20px;
+    font-size: 12px;
+    opacity: 0;
+    animation: fadeInOut 4s ease-in-out;
+    pointer-events: none;
+}
+
+@keyframes fadeInOut {
+    0% {
+        opacity: 0;
+    }
+
+    10% {
+        opacity: 1;
+    }
+
+    80% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 0;
+    }
+}

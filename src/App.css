@@ -291,3 +291,49 @@
     font-family: monospace;
     font-weight: 600;
 }
+
+/* Interface Selector */
+.interface-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 12px;
+}
+
+.interface-option {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px;
+    background: #f8f9fa;
+    border: 2px solid transparent;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+}
+
+.interface-option:hover {
+    background: #e9ecef;
+    transform: translateY(-2px);
+}
+
+.interface-option.selected {
+    background: #e8f5e9;
+    border-color: #28a745;
+}
+
+.interface-icon {
+    font-size: 1.5rem;
+}
+
+.interface-name {
+    font-weight: 500;
+    color: #333;
+    flex: 1;
+}
+
+.interface-check {
+    color: #28a745;
+    font-weight: bold;
+    font-size: 1.2rem;
+}

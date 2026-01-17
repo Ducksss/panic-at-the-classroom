@@ -1,0 +1,314 @@
+.vscode-view {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: #1e1e1e;
+    display: flex;
+    flex-direction: column;
+    font-family: 'Segoe UI', -apple-system, sans-serif;
+    font-size: 13px;
+    color: #cccccc;
+    z-index: 10000;
+}
+
+/* Title Bar */
+.vscode-titlebar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #3c3c3c;
+    padding: 0 8px;
+    height: 30px;
+    font-size: 12px;
+    -webkit-app-region: drag;
+}
+
+.titlebar-left {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.vscode-logo {
+    color: #007acc;
+    font-size: 16px;
+    margin-right: 8px;
+}
+
+.menu-item {
+    padding: 4px 8px;
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+.menu-item:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.titlebar-center {
+    color: #999;
+}
+
+.titlebar-right {
+    display: flex;
+    gap: 4px;
+}
+
+.vscode-titlebar .titlebar-btn {
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.vscode-titlebar .titlebar-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.vscode-titlebar .titlebar-btn.close:hover {
+    background: #e81123;
+}
+
+/* Main Content */
+.vscode-content {
+    flex: 1;
+    display: flex;
+    overflow: hidden;
+}
+
+/* Activity Bar */
+.activity-bar {
+    width: 48px;
+    background: #333333;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 8px;
+}
+
+.activity-icon {
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    opacity: 0.6;
+    cursor: pointer;
+    border-left: 2px solid transparent;
+}
+
+.activity-icon:hover {
+    opacity: 1;
+}
+
+.activity-icon.active {
+    opacity: 1;
+    border-left-color: #007acc;
+}
+
+.activity-spacer {
+    flex: 1;
+}
+
+/* Sidebar */
+.sidebar {
+    width: 240px;
+    background: #252526;
+    border-right: 1px solid #3c3c3c;
+    overflow-y: auto;
+}
+
+.sidebar-header {
+    padding: 10px 12px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    color: #bbbbbb;
+}
+
+.folder,
+.file {
+    padding: 4px 12px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+}
+
+.folder:hover,
+.file:hover {
+    background: #2a2d2e;
+}
+
+.file.nested {
+    padding-left: 32px;
+}
+
+.file.active {
+    background: #37373d;
+}
+
+/* Editor Area */
+.editor-area {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    background: #1e1e1e;
+}
+
+.editor-tabs {
+    display: flex;
+    background: #252526;
+    border-bottom: 1px solid #3c3c3c;
+}
+
+.tab {
+    padding: 8px 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    border-right: 1px solid #3c3c3c;
+    font-size: 13px;
+}
+
+.tab.active {
+    background: #1e1e1e;
+    border-bottom: 1px solid #1e1e1e;
+    margin-bottom: -1px;
+}
+
+.tab-close {
+    opacity: 0;
+    font-size: 16px;
+}
+
+.tab:hover .tab-close {
+    opacity: 0.6;
+}
+
+.breadcrumb {
+    padding: 4px 12px;
+    font-size: 12px;
+    color: #888;
+    background: #1e1e1e;
+    border-bottom: 1px solid #3c3c3c;
+}
+
+/* Code Editor */
+.code-editor {
+    flex: 1;
+    display: flex;
+    overflow: auto;
+    font-family: 'Cascadia Code', 'Fira Code', Consolas, monospace;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.line-numbers {
+    padding: 8px 12px;
+    text-align: right;
+    color: #858585;
+    user-select: none;
+    background: #1e1e1e;
+    min-width: 50px;
+}
+
+.line-number {
+    height: 21px;
+}
+
+.code-content {
+    flex: 1;
+    padding: 8px 16px;
+    margin: 0;
+    color: #d4d4d4;
+    overflow-x: auto;
+}
+
+.code-content code {
+    white-space: pre;
+}
+
+/* Minimap */
+.minimap {
+    width: 80px;
+    background: #1e1e1e;
+    border-left: 1px solid #3c3c3c;
+}
+
+.minimap-content {
+    margin: 8px;
+    height: 200px;
+    background: linear-gradient(to bottom,
+            rgba(255, 255, 255, 0.05) 0%,
+            rgba(255, 255, 255, 0.02) 50%,
+            rgba(255, 255, 255, 0.05) 100%);
+    border-radius: 2px;
+}
+
+/* Status Bar */
+.vscode-statusbar {
+    display: flex;
+    justify-content: space-between;
+    background: #007acc;
+    color: white;
+    padding: 0 8px;
+    height: 22px;
+    font-size: 12px;
+}
+
+.status-left,
+.status-right {
+    display: flex;
+    align-items: center;
+}
+
+.status-item {
+    padding: 0 8px;
+    cursor: pointer;
+}
+
+.status-item:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+/* Exit hint */
+.vscode-view .exit-hint {
+    position: fixed;
+    bottom: 40px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 8px 24px;
+    border-radius: 20px;
+    font-size: 12px;
+    opacity: 0;
+    animation: fadeInOut 4s ease-in-out;
+    pointer-events: none;
+}
+
+@keyframes fadeInOut {
+    0% {
+        opacity: 0;
+    }
+
+    10% {
+        opacity: 1;
+    }
+
+    80% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 0;
+    }
+}

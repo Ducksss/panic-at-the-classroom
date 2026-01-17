@@ -1,4 +1,4 @@
-import { RegisteredFace } from '../App'
+import { RegisteredFace, PanicInterface, PANIC_INTERFACES } from '../App'
 import './Dashboard.css'
 
 interface DashboardProps {
@@ -9,6 +9,8 @@ interface DashboardProps {
     registeredFaces: RegisteredFace[]
     onDeleteFace: (id: string) => void
     onManualPanic: () => void
+    selectedInterface: PanicInterface
+    setSelectedInterface: (value: PanicInterface) => void
 }
 
 export function Dashboard({
@@ -18,7 +20,9 @@ export function Dashboard({
     setIsRegistering,
     registeredFaces,
     onDeleteFace,
-    onManualPanic
+    onManualPanic,
+    selectedInterface,
+    setSelectedInterface
 }: DashboardProps) {
     // Determine current mode for status display
     const getStatus = () => {
@@ -91,6 +95,29 @@ export function Dashboard({
                 {registeredFaces.length === 0 && !isRegistering && (
                     <p className="hint">👆 Register a teacher's face to enable monitoring</p>
                 )}
+            </div>
+
+            {/* Interface Selector */}
+            <div className="status-card">
+                <h2>🎨 Panic Interface</h2>
+                <p className="hint" style={{ marginTop: 0, marginBottom: 16 }}>
+                    Choose what to display when a teacher is detected:
+                </p>
+                <div className="interface-grid">
+                    {PANIC_INTERFACES.map((iface) => (
+                        <div
+                            key={iface.id}
+                            className={`interface-option ${selectedInterface === iface.id ? 'selected' : ''}`}
+                            onClick={() => setSelectedInterface(iface.id)}
+                        >
+                            <span className="interface-icon">{iface.icon}</span>
+                            <span className="interface-name">{iface.name}</span>
+                            {selectedInterface === iface.id && (
+                                <span className="interface-check">✓</span>
+                            )}
+                        </div>
+                    ))}
+                </div>
             </div>
 
             {/* Registered Faces Gallery */}

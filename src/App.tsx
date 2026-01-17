@@ -1,6 +1,10 @@
 import { useState, useEffect, useCallback } from 'react'
 import { Dashboard } from './components/Dashboard'
 import { ExcelView } from './components/ExcelView'
+import { VSCodeView } from './components/VSCodeView'
+import { OutlookView } from './components/OutlookView'
+import { NotionView } from './components/NotionView'
+import { CanvasView } from './components/CanvasView'
 import { FaceDetector } from './components/FaceDetector'
 import './App.css'
 
@@ -12,11 +16,22 @@ export interface RegisteredFace {
     registeredAt: Date
 }
 
+export type PanicInterface = 'excel' | 'vscode' | 'outlook' | 'notion' | 'canvas'
+
+export const PANIC_INTERFACES: { id: PanicInterface; name: string; icon: string }[] = [
+    { id: 'excel', name: 'Microsoft Excel', icon: '📊' },
+    { id: 'vscode', name: 'Visual Studio Code', icon: '💻' },
+    { id: 'outlook', name: 'Microsoft Outlook', icon: '📧' },
+    { id: 'notion', name: 'Notion', icon: '📝' },
+    { id: 'canvas', name: 'Canvas LMS', icon: '🎓' },
+]
+
 function App() {
     const [isPanicMode, setIsPanicMode] = useState(false)
     const [isMonitoring, setIsMonitoring] = useState(false)
     const [isRegistering, setIsRegistering] = useState(false)
     const [registeredFaces, setRegisteredFaces] = useState<RegisteredFace[]>([])
+    const [selectedInterface, setSelectedInterface] = useState<PanicInterface>('excel')
 
     // Listen for panic mode changes from Electron
     useEffect(() => {
@@ -85,10 +100,28 @@ function App() {
         }
     }, [])
 
+    // Render the selected panic interface
+    const renderPanicView = () => {
+        const props = { onExit: handleExitPanic }
+        switch (selectedInterface) {
+            case 'vscode':
+                return <VSCodeView {...props} />
+            case 'outlook':
+                return <OutlookView {...props} />
+            case 'notion':
+                return <NotionView {...props} />
+            case 'canvas':
+                return <CanvasView {...props} />
+            case 'excel':
+            default:
+                return <ExcelView {...props} />
+        }
+    }
+
     return (
         <div className="app">
             {isPanicMode ? (
-                <ExcelView onExit={handleExitPanic} />
+                renderPanicView()
             ) : (
                 <>
                     <Dashboard
@@ -99,6 +132,8 @@ function App() {
                         registeredFaces={registeredFaces}
                         onDeleteFace={handleDeleteFace}
                         onManualPanic={() => setIsPanicMode(true)}
+                        selectedInterface={selectedInterface}
+                        setSelectedInterface={setSelectedInterface}
                     />
                     <FaceDetector
                         isMonitoring={isMonitoring}

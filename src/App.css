@@ -168,6 +168,11 @@
     padding: 20px 40px;
 }
 
+.btn-upload {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    color: white;
+}
+
 .hint {
     margin-top: 16px;
     color: #6c757d;

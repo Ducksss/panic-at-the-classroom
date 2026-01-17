@@ -1,3 +1,4 @@
+import { useRef } from 'react'
 import { RegisteredFace, PanicInterface, PANIC_INTERFACES } from '../App'
 import './Dashboard.css'
 
@@ -11,6 +12,7 @@ interface DashboardProps {
     onManualPanic: () => void
     selectedInterface: PanicInterface
     setSelectedInterface: (value: PanicInterface) => void
+    onImageUpload: (file: File) => void
 }
 
 export function Dashboard({
@@ -22,8 +24,10 @@ export function Dashboard({
     onDeleteFace,
     onManualPanic,
     selectedInterface,
-    setSelectedInterface
+    setSelectedInterface,
+    onImageUpload
 }: DashboardProps) {
+    const fileInputRef = useRef<HTMLInputElement>(null)
     // Determine current mode for status display
     const getStatus = () => {
         if (isRegistering) return { text: 'Registration Mode - Look at camera', class: 'registering' }
@@ -69,8 +73,29 @@ export function Dashboard({
                         }}
                         disabled={isMonitoring}
                     >
-                        {isRegistering ? '📸 Registering...' : '👤 Register Teacher'}
+                        {isRegistering ? '📸 Registering...' : '👤 Register (Camera)'}
                     </button>
+
+                    <button
+                        className="btn btn-upload"
+                        onClick={() => fileInputRef.current?.click()}
+                        disabled={isMonitoring || isRegistering}
+                    >
+                        📁 Upload Photo
+                    </button>
+                    <input
+                        ref={fileInputRef}
+                        type="file"
+                        accept="image/*"
+                        style={{ display: 'none' }}
+                        onChange={(e) => {
+                            const file = e.target.files?.[0]
+                            if (file) {
+                                onImageUpload(file)
+                                e.target.value = '' // Reset for same file
+                            }
+                        }}
+                    />
 
                     <button
                         className={`btn ${isMonitoring ? 'btn-danger' : 'btn-primary'}`}

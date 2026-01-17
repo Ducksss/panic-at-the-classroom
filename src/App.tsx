@@ -100,6 +100,74 @@ function App() {
         }
     }, [])
 
+    // Handle image upload for face registration
+    const handleImageUpload = useCallback(async (file: File) => {
+        try {
+            // Import face-api dynamically to avoid SSR issues
+            const faceapi = await import('@vladmandic/face-api')
+
+            // Create image element from file
+            const img = document.createElement('img')
+            const imageUrl = URL.createObjectURL(file)
+
+            img.onload = async () => {
+                try {
+                    // Detect face in uploaded image
+                    const detection = await faceapi
+                        .detectSingleFace(img, new faceapi.TinyFaceDetectorOptions())
+                        .withFaceLandmarks()
+                        .withFaceDescriptor()
+
+                    if (detection) {
+                        // Create canvas to get image data
+                        const canvas = document.createElement('canvas')
+                        canvas.width = 120
+                        canvas.height = 120
+                        const ctx = canvas.getContext('2d')
+
+                        if (ctx) {
+                            // Center crop the image
+                            const size = Math.min(img.width, img.height)
+                            const x = (img.width - size) / 2
+                            const y = (img.height - size) / 2
+                            ctx.drawImage(img, x, y, size, size, 0, 0, 120, 120)
+
+                            const imageData = canvas.toDataURL('image/jpeg', 0.8)
+
+                            const newFace: RegisteredFace = {
+                                id: `teacher-${Date.now()}`,
+                                descriptor: detection.descriptor,
+                                imageData,
+                                name: `Teacher ${registeredFaces.length + 1}`,
+                                registeredAt: new Date()
+                            }
+
+                            setRegisteredFaces(prev => [...prev, newFace])
+                            console.log('✅ Face registered from uploaded image!')
+                        }
+                    } else {
+                        alert('No face detected in the uploaded image. Please try another photo with a clear face.')
+                    }
+                } catch (err) {
+                    console.error('Face detection error:', err)
+                    alert('Error processing image. Please try again.')
+                } finally {
+                    URL.revokeObjectURL(imageUrl)
+                }
+            }
+
+            img.onerror = () => {
+                alert('Error loading image. Please try a different file.')
+                URL.revokeObjectURL(imageUrl)
+            }
+
+            img.src = imageUrl
+        } catch (error) {
+            console.error('Image upload error:', error)
+            alert('Error processing image. Please try again.')
+        }
+    }, [registeredFaces.length])
+
     // Render the selected panic interface
     const renderPanicView = () => {
         const props = { onExit: handleExitPanic }
@@ -134,6 +202,7 @@ function App() {
                         onManualPanic={() => setIsPanicMode(true)}
                         selectedInterface={selectedInterface}
                         setSelectedInterface={setSelectedInterface}
+                        onImageUpload={handleImageUpload}
                     />
                     <FaceDetector
                         isMonitoring={isMonitoring}

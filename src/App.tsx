@@ -31,6 +31,17 @@ function App() {
         }
     }, [])
 
+    // Notify Electron about monitoring state (for background tray updates)
+    useEffect(() => {
+        if (window.electronAPI) {
+            if (isMonitoring) {
+                window.electronAPI.monitoringStarted()
+            } else {
+                window.electronAPI.monitoringStopped()
+            }
+        }
+    }, [isMonitoring])
+
     // Handle keyboard shortcut for web testing
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {

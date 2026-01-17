@@ -8,6 +8,10 @@ contextBridge.exposeInMainWorld('electronAPI', {
     // Notify main process when teacher is detected
     teacherDetected: () => ipcRenderer.send('teacher-detected'),
 
+    // Notify main process about monitoring state (for tray updates)
+    monitoringStarted: () => ipcRenderer.send('monitoring-started'),
+    monitoringStopped: () => ipcRenderer.send('monitoring-stopped'),
+
     // Listen for panic mode changes
     onPanicMode: (callback: (isPanic: boolean) => void) => {
         ipcRenderer.on('panic-mode', (_event, isPanic) => callback(isPanic))

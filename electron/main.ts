@@ -4,6 +4,7 @@ import path from 'path'
 let mainWindow: BrowserWindow | null = null
 let tray: Tray | null = null
 let isPanicMode = false
+let isMonitoringActive = false
 
 const VITE_DEV_SERVER_URL = process.env.VITE_DEV_SERVER_URL
 
@@ -17,6 +18,8 @@ function createWindow() {
             preload: path.join(__dirname, 'preload.js'),
             nodeIntegration: false,
             contextIsolation: true,
+            // CRITICAL: Prevent throttling when window is hidden/minimized
+            backgroundThrottling: false,
         },
     })
 
@@ -31,20 +34,48 @@ function createWindow() {
         // Minimize to tray instead of closing
         event.preventDefault()
         mainWindow?.hide()
+
+        // Notify user that monitoring continues in background
+        if (isMonitoringActive) {
+            tray?.setToolTip('Panic at the Classroom - 🟢 Monitoring in Background')
+        }
     })
+
+    // Keep window rendering even when hidden (for camera access)
+    mainWindow.webContents.setBackgroundThrottling(false)
 }
 
 function createTray() {
-    // Create a simple tray icon (green circle = protected)
+    // Create a simple tray icon
     const icon = nativeImage.createEmpty()
     tray = new Tray(icon)
 
+    updateTrayMenu()
+
+    tray.on('click', () => {
+        mainWindow?.show()
+        mainWindow?.focus()
+    })
+}
+
+function updateTrayMenu() {
     const contextMenu = Menu.buildFromTemplate([
         {
             label: '👁️ Open Dashboard',
             click: () => {
                 mainWindow?.show()
                 mainWindow?.focus()
+            }
+        },
+        { type: 'separator' },
+        {
+            label: isMonitoringActive ? '🟢 Monitoring Active' : '⚪ Monitoring Off',
+            enabled: false
+        },
+        {
+            label: '🔽 Minimize to Tray (Keep Monitoring)',
+            click: () => {
+                mainWindow?.hide()
             }
         },
         { type: 'separator' },
@@ -62,13 +93,10 @@ function createTray() {
         }
     ])
 
-    tray.setToolTip('Panic at the Classroom - Protected')
-    tray.setContextMenu(contextMenu)
-
-    tray.on('click', () => {
-        mainWindow?.show()
-        mainWindow?.focus()
-    })
+    tray?.setToolTip(isMonitoringActive
+        ? 'Panic at the Classroom - 🟢 Monitoring Active'
+        : 'Panic at the Classroom - Ready')
+    tray?.setContextMenu(contextMenu)
 }
 
 function triggerPanicMode() {
@@ -111,6 +139,19 @@ ipcMain.on('teacher-detected', () => {
     if (!isPanicMode) {
         triggerPanicMode()
     }
+})
+
+// Track monitoring state for tray updates
+ipcMain.on('monitoring-started', () => {
+    isMonitoringActive = true
+    updateTrayMenu()
+    console.log('📡 Background monitoring started')
+})
+
+ipcMain.on('monitoring-stopped', () => {
+    isMonitoringActive = false
+    updateTrayMenu()
+    console.log('📡 Background monitoring stopped')
 })
 
 app.whenReady().then(() => {

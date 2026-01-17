@@ -63,6 +63,11 @@
     color: #6c757d;
 }
 
+.status-indicator.registering {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+}
+
 .pulse {
     width: 12px;
     height: 12px;
@@ -108,13 +113,19 @@
     transition: all 0.2s;
 }
 
-.btn:hover {
+.btn:hover:not(:disabled) {
     transform: translateY(-2px);
     box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
 }
 
-.btn:active {
+.btn:active:not(:disabled) {
     transform: translateY(0);
+}
+
+.btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
 }
 
 .btn-primary {
@@ -132,11 +143,110 @@
     color: white;
 }
 
+.btn-active {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    animation: glow 1.5s ease-in-out infinite;
+}
+
+@keyframes glow {
+
+    0%,
+    100% {
+        box-shadow: 0 0 5px rgba(102, 126, 234, 0.5);
+    }
+
+    50% {
+        box-shadow: 0 0 20px rgba(102, 126, 234, 0.8);
+    }
+}
+
 .btn-panic {
     background: linear-gradient(135deg, #ff416c 0%, #ff4b2b 100%);
     color: white;
     font-size: 1.2rem;
     padding: 20px 40px;
+}
+
+.hint {
+    margin-top: 16px;
+    color: #6c757d;
+    font-size: 0.95rem;
+}
+
+/* Face Gallery */
+.empty-gallery {
+    text-align: center;
+    padding: 32px;
+    color: #6c757d;
+}
+
+.face-gallery {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 16px;
+    margin-top: 16px;
+}
+
+.face-card {
+    background: #f8f9fa;
+    border-radius: 12px;
+    padding: 12px;
+    position: relative;
+    text-align: center;
+    transition: all 0.2s;
+}
+
+.face-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.face-card img {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid #217346;
+}
+
+.face-info {
+    display: flex;
+    flex-direction: column;
+    margin-top: 8px;
+}
+
+.face-name {
+    font-weight: 600;
+    color: #333;
+}
+
+.face-date {
+    font-size: 0.8rem;
+    color: #6c757d;
+}
+
+.delete-btn {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    border: none;
+    background: #dc3545;
+    color: white;
+    cursor: pointer;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+
+.face-card:hover .delete-btn {
+    opacity: 1;
 }
 
 .info-grid {

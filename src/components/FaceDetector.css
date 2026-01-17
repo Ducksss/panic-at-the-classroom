@@ -9,6 +9,31 @@
     z-index: 100;
 }
 
+.face-detector.registering {
+    border: 3px solid #667eea;
+}
+
+.face-detector.monitoring {
+    border: 3px solid #28a745;
+}
+
+.detector-header {
+    padding: 10px 16px;
+    font-weight: 600;
+    text-align: center;
+    font-size: 0.9rem;
+}
+
+.face-detector.registering .detector-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+}
+
+.face-detector.monitoring .detector-header {
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    color: white;
+}
+
 .video-container {
     position: relative;
     width: 320px;
@@ -21,7 +46,6 @@
     height: 100%;
     object-fit: cover;
     transform: scaleX(-1);
-    /* Mirror for natural feel */
 }
 
 .video-container canvas {
@@ -33,6 +57,38 @@
     transform: scaleX(-1);
 }
 
+.registration-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+}
+
+.face-guide {
+    width: 150px;
+    height: 180px;
+    border: 3px dashed rgba(102, 126, 234, 0.8);
+    border-radius: 50%;
+    animation: pulse-guide 2s ease-in-out infinite;
+}
+
+@keyframes pulse-guide {
+
+    0%,
+    100% {
+        border-color: rgba(102, 126, 234, 0.5);
+    }
+
+    50% {
+        border-color: rgba(102, 126, 234, 1);
+    }
+}
+
 .video-controls {
     position: absolute;
     bottom: 0;
@@ -42,24 +98,25 @@
     background: linear-gradient(transparent, rgba(0, 0, 0, 0.7));
 }
 
-.btn-register {
+.btn-capture {
     width: 100%;
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     color: white;
     border: none;
-    padding: 10px 16px;
+    padding: 12px 16px;
     border-radius: 8px;
     font-weight: 600;
+    font-size: 1rem;
     cursor: pointer;
     transition: all 0.2s;
 }
 
-.btn-register:hover:not(:disabled) {
+.btn-capture:hover:not(:disabled) {
     transform: scale(1.02);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
-.btn-register:disabled {
+.btn-capture:disabled {
     opacity: 0.6;
     cursor: not-allowed;
 }
@@ -81,4 +138,10 @@
     color: #28a745;
     text-align: center;
     border-top: 1px solid #eee;
+    background: #fafafa;
+}
+
+.detector-status .face-found {
+    color: #ff6b6b;
+    font-weight: 600;
 }

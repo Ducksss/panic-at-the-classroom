@@ -9,15 +9,22 @@ flowchart TB
     subgraph Client["🖥️ Client Application (Electron/Web)"]
         subgraph UI["User Interface Layer"]
             MainView["Main Dashboard"]
-            ExcelView["📊 Fake Excel Interface"]
-            Settings["⚙️ Settings Panel"]
-            FaceReg["👤 Face Registration Wizard"]
+            subgraph PanicViews["🎭 Panic Interfaces"]
+                ExcelView["📊 Excel"]
+                VSCodeView["💻 VS Code"]
+                OutlookView["📧 Outlook"]
+                NotionView["📝 Notion"]
+                CanvasView["🎓 Canvas LMS"]
+            end
+            Settings["⚙️ Interface Selector"]
+            FaceReg["👤 Face Registration"]
         end
         
         subgraph Core["Core Logic Layer"]
             StateManager["State Manager"]
             PanicController["🚨 Panic Controller"]
             HotkeyHandler["⌨️ Hotkey Handler"]
+            InterfaceSelector["Interface Selector"]
         end
         
         subgraph AI["AI/Camera Layer"]
@@ -31,20 +38,20 @@ flowchart TB
     subgraph External["External Libraries"]
         TensorFlow["TensorFlow.js"]
         FaceAPI["face-api.js"]
-        ChartJS["Chart.js"]
+        Recharts["Recharts"]
         WebRTC["WebRTC API"]
     end
     
     CameraService --> WebRTC
     FaceDetector --> TensorFlow
     FaceRecognizer --> FaceAPI
-    ExcelView --> ChartJS
+    PanicViews --> Recharts
     
     CameraService --> FaceDetector
     FaceDetector --> FaceRecognizer
     FaceRecognizer --> PanicController
-    PanicController --> StateManager
-    StateManager --> UI
+    PanicController --> InterfaceSelector
+    InterfaceSelector --> PanicViews
     HotkeyHandler --> PanicController
     ModelStore --> FaceRecognizer
 ```
@@ -63,68 +70,90 @@ flowchart LR
         direction TB
         Frame["Capture Frame<br/>(30 FPS)"]
         Resize["Resize & Optimize<br/>(320x240)"]
-        Detect["Face Detection<br/>(MTCNN/SSD)"]
+        Detect["Face Detection<br/>(TinyFace)"]
         Extract["Extract Face<br/>Landmarks"]
         Encode["Generate Face<br/>Descriptor"]
-        Compare["Compare Against<br/>Registered Faces"]
+        Compare["Compare Against<br/>Registered Faces<br/>(Threshold: 0.4)"]
     end
     
     subgraph Decision["⚡ Decision"]
-        Threshold{"Confidence<br/>> 85%?"}
+        Threshold{"Match<br/>Distance?"}
         Teacher["🚨 TEACHER<br/>DETECTED"]
         Safe["✅ SAFE"]
     end
     
     subgraph Action["🎬 Action"]
-        Switch["Switch to<br/>Excel View"]
+        SelectView["Select<br/>Interface"]
+        Switch["Switch to<br/>Panic View"]
         Continue["Continue<br/>Monitoring"]
     end
     
     Webcam --> Frame --> Resize --> Detect --> Extract --> Encode --> Compare
     Compare --> Threshold
-    Threshold -->|Yes| Teacher --> Switch
-    Threshold -->|No| Safe --> Continue
+    Threshold -->|< 0.4| Teacher --> SelectView --> Switch
+    Threshold -->|>= 0.4| Safe --> Continue
     Continue -.->|Loop| Frame
 ```
 
 ---
 
-## Component Architecture
+## Panic Interface Components
 
 ```mermaid
 flowchart TB
-    subgraph ExcelInterface["📊 Fake Excel Interface Components"]
-        direction TB
-        
-        subgraph Toolbar["Ribbon Toolbar"]
-            FileTab["File"]
-            HomeTab["Home"]
-            InsertTab["Insert"]
-            DataTab["Data"]
-        end
-        
-        subgraph Sheets["Spreadsheet Area"]
-            Grid["Cell Grid<br/>(100x50 cells)"]
-            FormulaBar["Formula Bar"]
-            Headers["Row/Column Headers"]
-        end
-        
-        subgraph Charts["📈 Chart Section"]
-            BarChart["Bar Chart"]
-            PieChart["Pie Chart"]
-            LineChart["Line Graph"]
-        end
-        
-        subgraph Footer["Sheet Navigation"]
-            Sheet1["Sheet1"]
-            Sheet2["Sheet2"]
-            Sheet3["Budget Q4"]
-        end
+    subgraph InterfaceSelector["🎨 Interface Selector"]
+        Excel["📊 Excel"]
+        VSCode["💻 VS Code"]
+        Outlook["📧 Outlook"]
+        Notion["📝 Notion"]
+        Canvas["🎓 Canvas"]
     end
     
-    Toolbar --> Sheets
-    Sheets --> Charts
-    Charts --> Footer
+    subgraph ExcelInterface["📊 Excel Interface"]
+        direction TB
+        ExcelGrid["Cell Grid + Selection"]
+        ExcelCharts["Bar/Line/Pie Charts"]
+        ExcelTabs["Sheet Tabs"]
+        ExcelFormula["Formula Bar + Cursor"]
+    end
+    
+    subgraph VSCodeInterface["💻 VS Code Interface"]
+        direction TB
+        VSCodeExplorer["File Explorer"]
+        VSCodeEditor["Code Editor + Cursor"]
+        VSCodeMinimap["Minimap"]
+        VSCodeStatus["Status Bar + Sync"]
+    end
+    
+    subgraph OutlookInterface["📧 Outlook Interface"]
+        direction TB
+        OutlookFolders["Folder Pane"]
+        OutlookList["Email List"]
+        OutlookReading["Reading Pane"]
+        OutlookTyping["Typing Indicator"]
+    end
+    
+    subgraph NotionInterface["📝 Notion Interface"]
+        direction TB
+        NotionSidebar["Page Sidebar"]
+        NotionContent["Notes Content"]
+        NotionTodos["Interactive Checkboxes"]
+        NotionToggles["Expandable Toggles"]
+    end
+    
+    subgraph CanvasInterface["🎓 Canvas Interface"]
+        direction TB
+        CanvasCourses["Course Sidebar"]
+        CanvasModules["Expandable Modules"]
+        CanvasTodo["To-Do List"]
+        CanvasGrades["Recent Grades"]
+    end
+    
+    Excel --> ExcelInterface
+    VSCode --> VSCodeInterface
+    Outlook --> OutlookInterface
+    Notion --> NotionInterface
+    Canvas --> CanvasInterface
 ```
 
 ---
@@ -135,6 +164,9 @@ flowchart TB
 stateDiagram-v2
     [*] --> Idle: App Launch
     
+    Idle --> Registering: Register Teacher
+    Registering --> Idle: Face Captured
+    
     Idle --> Monitoring: Start Protection
     Monitoring --> Idle: Stop Protection
     
@@ -142,9 +174,16 @@ stateDiagram-v2
     Analyzing --> Monitoring: Unknown Face
     Analyzing --> PanicMode: Teacher Match!
     
-    PanicMode --> ExcelView: Switch Complete
-    ExcelView --> Monitoring: Teacher Gone
-    ExcelView --> ExcelView: Stay in Excel
+    PanicMode --> SelectedView: Load Interface
+    SelectedView --> Monitoring: ESC / Click
+    
+    state SelectedView {
+        [*] --> Excel
+        Excel --> VSCode: User Preference
+        VSCode --> Outlook: User Preference
+        Outlook --> Notion: User Preference
+        Notion --> Canvas: User Preference
+    }
     
     state Monitoring {
         [*] --> CameraActive
@@ -152,48 +191,55 @@ stateDiagram-v2
         FrameCapture --> FaceDetection
         FaceDetection --> CameraActive
     }
-    
-    state PanicMode {
-        [*] --> TriggerSwitch
-        TriggerSwitch --> HideContent
-        HideContent --> ShowExcel
-    }
 ```
 
 ---
 
-## Data Flow
+## Interactive Features
 
 ```mermaid
-flowchart LR
-    subgraph Storage["💾 Local Storage"]
-        FaceData["Teacher Face<br/>Descriptors"]
-        Settings["User Settings"]
-        Templates["Excel Templates"]
+flowchart TB
+    subgraph Animations["🎬 Animations & Interactivity"]
+        subgraph ExcelAnim["Excel"]
+            CellSelect["Cell Selection"]
+            FormulaCursor["Formula Cursor Blink"]
+            Saving["Saving... Animation"]
+            SheetSwitch["Sheet Tab Switch"]
+        end
+        
+        subgraph VSCodeAnim["VS Code"]
+            CodeCursor["Blinking Cursor"]
+            LineHighlight["Current Line"]
+            FileSelect["File Selection"]
+            SyncAnim["Syncing Animation"]
+        end
+        
+        subgraph OutlookAnim["Outlook"]
+            EmailSelect["Email Selection"]
+            TypingDots["Typing Indicator"]
+            FolderNav["Folder Navigation"]
+            SyncStatus["Sync Status"]
+        end
+        
+        subgraph NotionAnim["Notion"]
+            TodoCheck["Checkbox Toggle"]
+            ToggleExpand["Block Expand/Collapse"]
+            PageNav["Page Navigation"]
+            EditIndicator["Editing Indicator"]
+        end
+        
+        subgraph CanvasAnim["Canvas"]
+            ModuleExpand["Module Expand"]
+            TabSwitch["Tab Navigation"]
+            UrgentPulse["Urgent Item Pulse"]
+            GradeDisplay["Grade Display"]
+        end
     end
-    
-    subgraph Runtime["🔄 Runtime State"]
-        ActiveFaces["Active Face<br/>Comparisons"]
-        CurrentView["Current View<br/>State"]
-        DetectionLog["Detection<br/>History"]
-    end
-    
-    subgraph Output["🖥️ Display"]
-        NormalMode["Normal Mode<br/>(Hidden)"]
-        PanicMode["Panic Mode<br/>(Excel View)"]
-    end
-    
-    FaceData --> ActiveFaces
-    Settings --> CurrentView
-    Templates --> PanicMode
-    ActiveFaces --> DetectionLog
-    CurrentView --> NormalMode
-    CurrentView --> PanicMode
 ```
 
 ---
 
-## Technology Stack Diagram
+## Technology Stack
 
 ```mermaid
 flowchart TB
@@ -209,6 +255,7 @@ flowchart TB
         Tray["🔲 System Tray"]
         Overlay["📺 Fullscreen Overlay"]
         Hotkeys["⌨️ Global Hotkeys"]
+        Background["🔄 Background Monitoring"]
     end
     
     subgraph AI_ML["AI/ML Stack"]
@@ -220,7 +267,7 @@ flowchart TB
     
     subgraph Visualization["Data Visualization"]
         direction LR
-        ChartJS["Chart.js"]
+        Recharts["Recharts"]
         Canvas["HTML5 Canvas"]
     end
     
@@ -238,37 +285,6 @@ flowchart TB
 
 ---
 
-## Deployment Architecture
-
-```mermaid
-flowchart TB
-    subgraph Development["👨‍💻 Development"]
-        Code["Source Code"]
-        NPM["npm/yarn"]
-    end
-    
-    subgraph Build["🔨 Build Process"]
-        Vite["Vite Build"]
-        ElectronBuilder["Electron Builder"]
-    end
-    
-    subgraph Distribution["📦 Distribution"]
-        MacOS["macOS .dmg"]
-        Windows["Windows .exe"]
-        Linux["Linux .AppImage"]
-        Web["Web Build<br/>(PWA)"]
-    end
-    
-    Code --> NPM --> Vite
-    Vite --> ElectronBuilder
-    ElectronBuilder --> MacOS
-    ElectronBuilder --> Windows
-    ElectronBuilder --> Linux
-    Vite --> Web
-```
-
----
-
 ## Sequence Diagram - Full Flow
 
 ```mermaid
@@ -279,9 +295,10 @@ sequenceDiagram
     participant C as 📷 Camera
     participant D as 🧠 Detector
     participant R as 🔍 Recognizer
-    participant E as 📊 Excel View
+    participant I as 🎨 Interface Selector
+    participant V as 📊 Panic View
     
-    Note over U,E: 🎬 Initial Setup
+    Note over U,V: 🎬 Initial Setup
     U->>A: Launch Application
     A->>C: Request Camera Access
     C-->>A: Permission Granted
@@ -289,18 +306,20 @@ sequenceDiagram
     A->>D: Capture Face Frames
     D->>R: Generate Face Descriptor
     R-->>A: Face Registered ✅
+    U->>I: Select Panic Interface (e.g., VS Code)
     
-    Note over U,E: 🔄 Monitoring Loop
+    Note over U,V: 🔄 Monitoring Loop
     loop Every 33ms (30 FPS)
         C->>D: Send Video Frame
         D->>D: Detect Faces in Frame
         alt Face Found
             D->>R: Extract & Compare
-            alt Teacher Match (>85%)
+            alt Teacher Match (< 0.4 distance)
                 R->>A: 🚨 ALERT: Teacher Detected!
-                A->>E: Activate Panic Mode
-                E-->>U: Display Excel Interface
-                Note over E: User sees "work"
+                A->>I: Get Selected Interface
+                I->>V: Activate Panic View
+                V-->>U: Display Selected Interface
+                Note over V: User sees "work"<br/>with animations
             else Unknown Face
                 R-->>A: Safe, Continue
             end
@@ -309,10 +328,10 @@ sequenceDiagram
         end
     end
     
-    Note over U,E: 🔙 Return to Normal
-    R->>A: Teacher No Longer Visible
-    A->>E: Deactivate Panic Mode
-    E-->>U: Return to Previous Screen
+    Note over U,V: 🔙 Return to Normal
+    U->>V: Press ESC / Click
+    V->>A: Exit Panic Mode
+    A-->>U: Return to Dashboard
 ```
 
 ---
